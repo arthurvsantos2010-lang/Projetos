@@ -1,0 +1,360 @@
+```html
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desafio Marvel vs DC - Quiz de Super-Heróis</title>
+    <!-- Carregando Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Fontes temáticas de Quadrinhos (Bangers e Comic Neue) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <style>
+        /* Estilos customizados para estética de HQ (Comic Book) */
+        body {
+            font-family: 'Comic Neue', cursive, sans-serif;
+            background-color: #0f172a;
+            /* Padrão de retícula (Halftone) típico de quadrinhos */
+            background-image: 
+                radial-gradient(rgba(239, 68, 68, 0.18) 2px, transparent 2px),
+                radial-gradient(rgba(59, 130, 246, 0.18) 2px, #0f172a 2px);
+            background-size: 32px 32px;
+            background-position: 0 0, 16px 16px;
+        }
+
+        .font-comic-title {
+            font-family: 'Bangers', cursive;
+            letter-spacing: 0.06em;
+        }
+
+        /* Borda e sombra dura estilo painel de HQ */
+        .comic-panel {
+            border: 4px solid #000000;
+            box-shadow: 8px 8px 0px #000000;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .comic-btn {
+            border: 3px solid #000000;
+            box-shadow: 4px 4px 0px #000000;
+            transition: all 0.15s ease;
+        }
+
+        .comic-btn:hover:not(:disabled) {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0px #000000;
+        }
+
+        .comic-btn:active:not(:disabled) {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px #000000;
+        }
+
+        /* Animação de entrada da tela (Pop-in) */
+        @keyframes panelPop {
+            0% {
+                opacity: 0;
+                transform: scale(0.92) translateY(15px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .animate-panel {
+            animation: panelPop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        /* Efeito de explosão (Action Burst) */
+        .comic-badge {
+            text-shadow: 2px 2px 0px #000000;
+        }
+
+        /* Estilo dos botões de alternativas estilo HQ */
+        .option-btn {
+            border: 3px solid #000000;
+            box-shadow: 4px 4px 0px #000000;
+            transition: all 0.15s ease;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0px #000000;
+            background-color: #fef08a; /* yellow-200 */
+        }
+
+        .option-btn:active:not(:disabled) {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px #000000;
+        }
+
+        /* Balão de fala do herói */
+        .speech-bubble {
+            position: relative;
+            background: #ffffff;
+            border: 3px solid #000000;
+            box-shadow: 3px 3px 0px #000000;
+        }
+
+        @media (min-width: 640px) {
+            .speech-bubble::before {
+                content: '';
+                position: absolute;
+                left: -14px;
+                top: 50%;
+                transform: translateY(-50%);
+                border-width: 10px 14px 10px 0;
+                border-style: solid;
+                border-color: transparent #000000 transparent transparent;
+            }
+            .speech-bubble::after {
+                content: '';
+                position: absolute;
+                left: -9px;
+                top: 50%;
+                transform: translateY(-50%);
+                border-width: 7px 10px 7px 0;
+                border-style: solid;
+                border-color: transparent #ffffff transparent transparent;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4 text-slate-900 select-none">
+
+    <!-- Container Principal Centralizado -->
+    <main class="w-full max-w-2xl mx-auto">
+
+        <!-- TELA 1: INÍCIO DA MISSÃO -->
+        <section id="screen-start" class="comic-panel bg-white rounded-2xl p-6 sm:p-10 text-center animate-panel relative overflow-hidden">
+            <!-- Faixa decorativa superior Marvel (Vermelho) vs DC (Azul) -->
+            <div class="absolute top-0 left-0 right-0 h-3 flex">
+                <div class="w-1/2 bg-red-600"></div>
+                <div class="w-1/2 bg-blue-600"></div>
+            </div>
+
+            <div id="start-edition-badge" class="inline-block bg-yellow-400 border-2 border-black px-4 py-1 rounded-full font-bold text-xs sm:text-sm uppercase tracking-wider mb-4 shadow-[2px_2px_0px_#000]">
+                Edição #1 • 5 Desafios de Heróis
+            </div>
+
+            <h1 class="font-comic-title text-5xl sm:text-7xl leading-none mb-4">
+                <span class="text-red-600 drop-shadow-[3px_3px_0px_#000]">MARVEL</span>
+                <span class="text-yellow-400 drop-shadow-[3px_3px_0px_#000] mx-1">VS</span>
+                <span class="text-blue-600 drop-shadow-[3px_3px_0px_#000]">DC</span>
+            </h1>
+
+            <p class="text-lg sm:text-xl font-bold text-slate-700 mb-6 max-w-lg mx-auto">
+                Encare os heróis dos quadrinhos e escolha a alternativa certa nas 5 perguntas! A cada nova partida, uma nova edição com perguntas inéditas é desbloqueada.
+            </p>
+
+            <!-- Cards de Instrução Rápida -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8 text-left">
+                <div class="bg-slate-100 border-2 border-black rounded-xl p-3">
+                    <span class="font-comic-title text-xl text-red-600 block">1. Alternativas A-D</span>
+                    <span class="text-sm font-bold text-slate-600">Escolha a opção correta em cada painel de HQ.</span>
+                </div>
+                <div class="bg-slate-100 border-2 border-black rounded-xl p-3">
+                    <span class="font-comic-title text-xl text-blue-600 block">2. Dificuldade Dinâmica</span>
+                    <span class="text-sm font-bold text-slate-600">Acertos sobem o nível; erros trazem perguntas mais simples!</span>
+                </div>
+                <div class="bg-slate-100 border-2 border-black rounded-xl p-3">
+                    <span class="font-comic-title text-xl text-amber-600 block">3. Heróis & Novas Missões</span>
+                    <span class="text-sm font-bold text-slate-600">12 heróis em ação e perguntas inéditas a cada partida.</span>
+                </div>
+            </div>
+
+            <button id="btn-start" class="comic-btn w-full sm:w-auto bg-yellow-400 hover:bg-yellow-300 text-black font-comic-title text-3xl px-10 py-4 rounded-xl cursor-pointer">
+                INICIAR MISSÃO! ⚡
+            </button>
+        </section>
+
+        <!-- TELA 2: PERGUNTAS (MUDA DE CONTEÚDO/TELA E HERÓI A CADA RESPOSTA) -->
+        <section id="screen-quiz" class="hidden comic-panel bg-white rounded-2xl p-6 sm:p-8 relative overflow-hidden">
+            <!-- Barra de Progresso Superior -->
+            <div class="w-full bg-slate-200 h-4 rounded-full border-2 border-black mb-5 overflow-hidden">
+                <div id="progress-bar" class="bg-gradient-to-r from-red-600 via-yellow-400 to-blue-600 h-full transition-all duration-300" style="width: 20%;"></div>
+            </div>
+
+            <!-- Cabeçalho de Status: Universo, Nível de Dificuldade Adaptativo, Pergunta e Cronômetro -->
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-5">
+                <div class="flex flex-wrap items-center gap-2">
+                    <span id="universe-tag" class="bg-red-600 text-white border-2 border-black px-3 py-1 rounded-lg font-comic-title text-base sm:text-lg tracking-wider shadow-[2px_2px_0px_#000]">
+                        MARVEL
+                    </span>
+                    <span id="difficulty-tag" class="bg-emerald-400 text-black border-2 border-black px-2.5 py-1 rounded-lg font-comic-title text-base sm:text-lg tracking-wider shadow-[2px_2px_0px_#000]">
+                        NÍVEL: FÁCIL
+                    </span>
+                    <span id="question-counter" class="bg-slate-900 text-white px-3 py-1 rounded-lg font-bold text-xs sm:text-sm">
+                        Pergunta 1 de 5
+                    </span>
+                </div>
+
+                <!-- Cronômetro ao vivo -->
+                <div class="bg-yellow-300 border-2 border-black px-3 py-1 rounded-lg font-bold text-sm sm:text-base flex items-center gap-1.5 shadow-[2px_2px_0px_#000]">
+                    <span>⏱️</span>
+                    <span id="live-timer" class="font-mono font-extrabold text-black">00:00</span>
+                </div>
+            </div>
+
+            <!-- Painel do Herói Convidado (Ilustração SVG + Balão de Fala) -->
+            <div id="hero-panel-box" class="flex flex-col sm:flex-row items-center gap-4 bg-gradient-to-r from-red-100 to-slate-100 border-3 border-black rounded-2xl p-3.5 mb-5 shadow-[4px_4px_0px_#000] transition-colors duration-300">
+                <div id="hero-avatar-box" class="w-20 h-20 sm:w-24 sm:h-24 shrink-0 rounded-2xl border-3 border-black bg-white flex items-center justify-center overflow-hidden shadow-[3px_3px_0px_#000]">
+                    <!-- SVG do Herói inserido via JS -->
+                </div>
+                <div class="speech-bubble rounded-xl p-3 flex-1 text-center sm:text-left w-full">
+                    <span id="hero-name" class="font-comic-title text-lg sm:text-xl text-red-600 tracking-wide block leading-none mb-1">
+                        HOMEM-ARANHA
+                    </span>
+                    <p id="hero-quote" class="text-sm sm:text-base font-bold text-slate-800 italic leading-snug">
+                        "Meu sentido aranha diz que você sabe essa!"
+                    </p>
+                </div>
+            </div>
+
+            <!-- Balão de Pergunta -->
+            <div class="bg-slate-50 border-3 border-black rounded-2xl p-4 sm:p-5 mb-5 relative shadow-[4px_4px_0px_#cbd5e1]">
+                <h2 id="question-text" class="text-xl sm:text-2xl font-extrabold text-slate-900 leading-snug">
+                    Carregando pergunta...
+                </h2>
+            </div>
+
+            <!-- Grid de Alternativas A, B, C, D -->
+            <div id="options-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <!-- Botões gerados dinamicamente via JavaScript -->
+            </div>
+
+            <!-- Área de Feedback Imediato -->
+            <div id="feedback-box" class="hidden mt-5 p-4 sm:p-5 rounded-xl border-3 border-black text-center animate-panel">
+                <p id="feedback-title" class="font-comic-title text-3xl sm:text-4xl mb-1"></p>
+                <p id="feedback-detail" class="font-bold text-sm sm:text-base mb-4"></p>
+                
+                <button type="button" id="btn-next" class="comic-btn w-full sm:w-auto bg-yellow-400 hover:bg-yellow-300 text-black font-comic-title text-2xl px-8 py-3 rounded-xl cursor-pointer">
+                    PRÓXIMA PERGUNTA ➡️
+                </button>
+            </div>
+        </section>
+
+        <!-- TELA 3: RELATÓRIO FINAL (ACERTOS, ERROS, TEMPO E NÍVEL MÁXIMO) -->
+        <section id="screen-result" class="hidden comic-panel bg-white rounded-2xl p-6 sm:p-10 text-center animate-panel relative overflow-hidden">
+            <div class="absolute top-0 left-0 right-0 h-3 flex">
+                <div class="w-1/2 bg-blue-600"></div>
+                <div class="w-1/2 bg-red-600"></div>
+            </div>
+
+            <div id="result-edition-badge" class="inline-block bg-slate-900 text-yellow-400 border-2 border-black px-4 py-1 rounded-full font-bold text-xs sm:text-sm uppercase tracking-wider mb-3">
+                Relatório Oficial • Missão #1
+            </div>
+
+            <h2 id="rank-title" class="font-comic-title text-4xl sm:text-6xl text-red-600 drop-shadow-[2px_2px_0px_#000] mb-2">
+                HERÓI SUPREMO!
+            </h2>
+            <p id="rank-subtitle" class="text-base sm:text-lg font-bold text-slate-600 mb-6">
+                Você completou o desafio do multiverso Marvel e DC!
+            </p>
+
+            <!-- Painel de Estatísticas: Acertos, Erros, Tempo e Nível Máximo -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-8">
+                <!-- Card Acertos -->
+                <div class="bg-emerald-100 border-3 border-black rounded-2xl p-3 sm:p-4 shadow-[4px_4px_0px_#000]">
+                    <span class="block text-xs sm:text-sm font-extrabold uppercase text-emerald-800">Acertos</span>
+                    <span id="stat-hits" class="font-comic-title text-4xl sm:text-5xl text-emerald-600 drop-shadow-[2px_2px_0px_#000]">0</span>
+                    <span class="block text-xs font-bold text-emerald-800 mt-1">de 5</span>
+                </div>
+
+                <!-- Card Erros -->
+                <div class="bg-rose-100 border-3 border-black rounded-2xl p-3 sm:p-4 shadow-[4px_4px_0px_#000]">
+                    <span class="block text-xs sm:text-sm font-extrabold uppercase text-rose-800">Erros</span>
+                    <span id="stat-misses" class="font-comic-title text-4xl sm:text-5xl text-rose-600 drop-shadow-[2px_2px_0px_#000]">0</span>
+                    <span class="block text-xs font-bold text-rose-800 mt-1">de 5</span>
+                </div>
+
+                <!-- Card Tempo -->
+                <div class="bg-amber-100 border-3 border-black rounded-2xl p-3 sm:p-4 shadow-[4px_4px_0px_#000]">
+                    <span class="block text-xs sm:text-sm font-extrabold uppercase text-amber-800">Tempo</span>
+                    <span id="stat-time" class="font-comic-title text-3xl sm:text-4xl text-amber-600 drop-shadow-[2px_2px_0px_#000]">00s</span>
+                    <span class="block text-xs font-bold text-amber-800 mt-1">total</span>
+                </div>
+
+                <!-- Card Nível Máximo -->
+                <div class="bg-purple-100 border-3 border-black rounded-2xl p-3 sm:p-4 shadow-[4px_4px_0px_#000]">
+                    <span class="block text-xs sm:text-sm font-extrabold uppercase text-purple-800">Nível Máx.</span>
+                    <span id="stat-max-level" class="font-comic-title text-2xl sm:text-3xl text-purple-700 drop-shadow-[1px_1px_0px_#000] leading-tight block my-1">FÁCIL</span>
+                    <span class="block text-xs font-bold text-purple-800">alcançado</span>
+                </div>
+            </div>
+
+            <!-- Resumo das Respostas -->
+            <div class="text-left bg-slate-100 border-2 border-black rounded-xl p-4 mb-8">
+                <h3 class="font-comic-title text-xl text-slate-800 mb-3">Resumo da Missão (Heróis & Dificuldade):</h3>
+                <ul id="summary-list" class="space-y-2.5 text-sm sm:text-base font-bold">
+                    <!-- Preenchido via JavaScript -->
+                </ul>
+            </div>
+
+            <button id="btn-restart" class="comic-btn w-full sm:w-auto bg-red-600 hover:bg-red-500 text-white font-comic-title text-3xl px-8 py-4 rounded-xl cursor-pointer">
+                JOGAR NOVAMENTE / NOVA MISSÃO 🔄
+            </button>
+        </section>
+
+    </main>
+
+    <script>
+        /**
+         * Galeria de Ilustrações Vetoriais (SVG) em estilo HQ dos Heróis da Marvel e DC.
+         */
+        const heroSVGs = {
+            spiderman: `
+                <svg viewBox="0 0 100 100" class="w-full h-full bg-red-600">
+                    <g stroke="#991b1b" stroke-width="2" fill="none">
+                        <line x1="50" y1="0" x2="50" y2="100"/><line x1="0" y1="50" x2="100" y2="50"/>
+                        <line x1="0" y1="0" x2="100" y2="100"/><line x1="100" y1="0" x2="0" y2="100"/>
+                        <circle cx="50" cy="50" r="22"/><circle cx="50" cy="50" r="38"/>
+                    </g>
+                    <ellipse cx="50" cy="50" rx="30" ry="38" fill="#ef4444" stroke="#000" stroke-width="4"/>
+                    <path d="M27 42 Q37 32 46 48 Q35 56 27 42 Z" fill="#fff" stroke="#000" stroke-width="3.5"/>
+                    <path d="M73 42 Q63 32 54 48 Q65 56 73 42 Z" fill="#fff" stroke="#000" stroke-width="3.5"/>
+                </svg>`,
+            superman: `
+                <svg viewBox="0 0 100 100" class="w-full h-full bg-blue-600">
+                    <circle cx="50" cy="50" r="44" fill="#1d4ed8"/>
+                    <polygon points="24,26 76,26 88,44 50,84 12,44" fill="#facc15" stroke="#000" stroke-width="4"/>
+                    <polygon points="28,31 72,31 81,44 50,76 19,44" fill="#dc2626"/>
+                    <text x="50" y="62" text-anchor="middle" font-family="Bangers, sans-serif" font-size="42" fill="#facc15" stroke="#000" stroke-width="2">S</text>
+                </svg>`,
+            captain: `
+                <svg viewBox="0 0 100 100" class="w-full h-full bg-slate-900">
+                    <circle cx="50" cy="50" r="42" fill="#dc2626" stroke="#000" stroke-width="3.5"/>
+                    <circle cx="50" cy="50" r="32" fill="#ffffff" stroke="#000" stroke-width="2.5"/>
+                    <circle cx="50" cy="50" r="22" fill="#dc2626" stroke="#000" stroke-width="2.5"/>
+                    <circle cx="50" cy="50" r="13" fill="#2563eb" stroke="#000" stroke-width="2.5"/>
+                    <polygon points="50,38 53,46 62,46 55,51 57,59 50,54 43,59 45,51 38,46 47,46" fill="#ffffff"/>
+                </svg>`,
+            batman: `
+                <svg viewBox="0 0 100 100" class="w-full h-full bg-slate-900">
+                    <ellipse cx="50" cy="50" rx="43" ry="29" fill="#facc15" stroke="#000" stroke-width="4"/>
+                    <path d="M50 32 L54 39 L63 36 C65 44 74 44 82 41 C77 52 72 58 65 56 C61 61 54 64 50 69 C46 64 39 61 35 56 C28 58 23 52 18 41 C26 44 35 44 37 36 L46 39 Z" fill="#0f172a"/>
+                </svg>`,
+            thor: `
+                <svg viewBox="0 0 100 100" class="w-full h-full bg-sky-700">
+                    <polyline points="15,15 30,45 18,48 35,85" fill="none" stroke="#facc15" stroke-width="4"/>
+                    <polyline points="85,15 70,45 82,48 65,85" fill="none" stroke="#facc15" stroke-width="4"/>
+                    <rect x="45" y="48" width="10" height="38" rx="2" fill="#78350f" stroke="#000" stroke-width="3"/>
+                    <rect x="26" y="20" width="48" height="30" rx="5" fill="#94a3b8" stroke="#000" stroke-width="4"/>
+                    <line x1="34" y1="20" x2="34" y2="50" stroke="#475569" stroke-width="3"/>
+                    <line x1="66" y1="20" x2="66" y2="50" stroke="#475569" stroke-width="3"/>
+                </svg>`,
+            ironman: `
+                <svg viewBox="0 0 100 100" class="w-full h-full bg-red-700">
+                    <path d="M26 24 Q50 12 74 24 L78 62 L62 84 L38 84 L22 62 Z" fill="#dc2626" stroke="#000" stroke-width="4"/>
+                    <path d="M32 32 L44 38 L56 38 L68 32 L70 58 L58 76 L42 76 L30 58 Z" fill="#facc15" stroke="#000" stroke-width="3"/>
+                    <polygon points="33,47 46,50 45,54 33,52" fill="#38bdf8" stroke="#000" stroke-width="2"/>
+                    <polygon points="67,47 54,50 55,54 67,52" fill="#38bdf8" stroke="#000" stroke-width="2"/>
+                </svg>`,
+            wonderwoman: `
+                <svg viewBox="0 0 100 100" class="w-full h-full bg-red-600">
+                    <circle cx="50" cy="50" r="42" fill="#1d4ed8" stroke="#000" stroke-width="3"/>
+                    <path d="M16 36 L34 62 L50 44 L66 62 L84 36 L76 36 L65 51 L50 35 L35 51 L24 36 Z" fill="#facc15" stroke="#000" stroke-width="3"/>
+                    <path d="M22 48 L36 68 L50 53 
